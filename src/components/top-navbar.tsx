@@ -174,20 +174,85 @@ export const TopNavbar = ({ onMenuClick }: TopNavbarProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Notification bell with ringing animation */}
-            <div className="relative">
-              <button
-                onClick={handleNotificationClick}
-                className="text-gray-500 hover:text-gray-700 transition-colors p-1 relative"
-              >
-                <Bell className={`h-5 w-5 ${hasNotifications ? "bell-ring" : ""}`} />
-                {hasNotifications && (
-                  <span className="absolute -top-0 -right-0 h-3 w-3 bg-red-500 rounded-full animate-ping"></span>
-                )}
-                {hasNotifications && <span className="absolute -top-0 -right-0 h-3 w-3 bg-red-500 rounded-full"></span>}
-              </button>
-            </div>
+                {/* Notification Bell */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-gray-500 hover:text-gray-700 transition-colors p-1 relative">
+                  <Bell className={`h-5 w-5 ${hasNotifications ? "bell-ring" : ""}`} />
+                  {hasNotifications && (
+                    <>
+                      <span className="absolute -top-0 -right-0 h-3 w-3 bg-red-500 rounded-full animate-ping"></span>
+                      <span className="absolute -top-0 -right-0 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+                <div className="flex items-center justify-between px-3 py-2 border-b">
+                  <DropdownMenuLabel className="text-base font-semibold">
+                    Notifications
+                  </DropdownMenuLabel>
+                  <button
+                    onClick={() => setHasNotifications(false)}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    Mark all as read
+                  </button>
+                </div>
 
+                {/* Ticket Replies */}
+                <DropdownMenuLabel className="text-xs text-gray-400 mt-2 px-3">
+                  Ticket Replies
+                </DropdownMenuLabel>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/support/my-tickets"
+                    className="w-full cursor-pointer px-3 py-2 hover:bg-gray-100"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">
+                        Your ticket #123 has a new reply
+                      </p>
+                      <p className="text-xs text-gray-500">Just now</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+
+                {/* New Features */}
+                <DropdownMenuLabel className="text-xs text-gray-400 mt-2 px-3">
+                  New Features
+                </DropdownMenuLabel>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/features"
+                    className="w-full cursor-pointer px-3 py-2 hover:bg-gray-100"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">Dark mode is now available!</p>
+                      <p className="text-xs text-gray-500">2 days ago</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+
+                {/* Event Reminders */}
+                <DropdownMenuLabel className="text-xs text-gray-400 mt-2 px-3">
+                  Event Reminders
+                </DropdownMenuLabel>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/community/calendar"
+                    className="w-full cursor-pointer px-3 py-2 hover:bg-gray-100"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">
+                        Webinar: Scaling your product
+                      </p>
+                      <p className="text-xs text-gray-500">Aug 5, 3 PM</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {/* Fullscreen toggle */}
             <button onClick={toggleFullscreen} className="text-gray-500 hover:text-gray-700 transition-colors p-1">
               {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}

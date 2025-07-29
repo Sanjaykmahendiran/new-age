@@ -6,8 +6,20 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
-  LayoutDashboard, Users, ChevronUp, ChevronDown, FileText, Megaphone,
-  UserCircle, PlusCircle, ShieldCheck, BookOpen, Calendar, Ticket, Files, Bell,
+  LayoutDashboard,
+  Users,
+  ChevronUp,
+  ChevronDown,
+  FileText,
+  Megaphone,
+  UserCircle,
+  PlusCircle,
+  ShieldCheck,
+  BookOpen,
+  Calendar,
+  Ticket,
+  Files,
+  Bell,
 } from "lucide-react";
 
 type SubmenuItem = {
@@ -47,7 +59,11 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
     {
       title: "Support Center",
       items: [
-        { icon: Ticket, label: "Submit a Ticket", href: "/support/submit-ticket" },
+        {
+          icon: Ticket,
+          label: "Submit a Ticket",
+          href: "/support/submit-ticket",
+        },
         { icon: Files, label: "My Tickets", href: "/support/my-tickets" },
       ],
     },
@@ -60,33 +76,41 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
     {
       title: "Enhancement Hub",
       items: [
-        { icon: PlusCircle, label: "Submit Enhancement", href: "/enhancement/submit" },
-        { icon: Users, label: "Community Suggestions", href: "/enhancement/suggestions" },
+        {
+          icon: PlusCircle,
+          label: "Submit Enhancement",
+          href: "/enhancement/submit",
+        },
+        { icon: Users, label: "Suggestions", href: "/enhancement/suggestions" },
       ],
     },
     {
       title: "Developer Portal",
       items: [
         { icon: FileText, label: "API Docs", href: "/developer/api-docs" },
-        { icon: ShieldCheck, label: "Authentication & Keys", href: "/developer/auth-keys" },
+        {
+          icon: ShieldCheck,
+          label: "Authentication & Keys",
+          href: "/developer/auth-keys",
+        },
       ],
     },
     {
       title: "Community & Events",
       items: [
         { icon: Calendar, label: "Calendar", href: "/community/calendar" },
-        { icon: Megaphone, label: "Product Releases", href: "/community/releases" },
+        {
+          icon: Megaphone,
+          label: "Product Releases",
+          href: "/community/releases",
+        },
       ],
     },
     {
       title: "",
-      items: [
-        { icon: Bell, label: "Notifications", href: "/notifications" },
-        { icon: UserCircle, label: "My Profile", href: "/profile" },
-      ],
+      items: [{ icon: UserCircle, label: "My Profile", href: "/myprofile" }],
     },
   ];
-
 
   useEffect(() => {
     sections.forEach((section) => {
@@ -121,7 +145,7 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
       {sections.map((section, sectionIndex) => (
         <div key={sectionIndex} className="mb-6">
           {section.title && !isCollapsed && (
-            <h3 className="text-base font-semibold text-gray-400 mb-2 px-4">
+            <h3 className="text-base font-semibold text-gray-600 mb-2 px-4">
               {section.title}
             </h3>
           )}
@@ -135,18 +159,21 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
                     ref={isActive ? activeItemRef : null}
                     onClick={() => handleMenuClick(item)}
                     variant="ghost"
-                    className={`w-full text-base rounded-md  justify-start h-10 ${isCollapsed ? "px-3" : "px-4"
-                      } text-gray-400 rounded-lg 
-  ${isActive
-                        ? "bg-[#00d458] text-white hover:bg-[#00d458] hover:text-white font-semibold"
-                        : "hover:bg-white hover:text-[#00d458] text-[14px] font-semibold"
-                      } cursor-pointer`}
+                    className={`w-full text-base rounded-md  justify-start h-10 ${
+                      isCollapsed ? "px-3" : "px-4"
+                    } text-gray-400 rounded-lg 
+  ${
+    isActive
+      ? "bg-[#00d458] text-white hover:bg-[#00d458] hover:text-white font-semibold"
+      : "hover:bg-white hover:text-[#00d458] text-[14px] font-semibold"
+  } cursor-pointer`}
                   >
                     <item.icon
-                      className={`${isCollapsed ? "mx-auto" : "mr-3"} h-5 w-5 ${isActive
-                        ? "text-white hover:text-white"
-                        : "hover:text-[#00d458]"
-                        }`}
+                      className={`${isCollapsed ? "mx-auto" : "mr-3"} h-5 w-5 ${
+                        isActive
+                          ? "text-white hover:text-white"
+                          : "hover:text-[#00d458]"
+                      }`}
                     />
                     {!isCollapsed && (
                       <>
@@ -170,10 +197,11 @@ export function Sidebar({ isCollapsed = false }: SidebarProps) {
                             <Button
                               ref={isSubActive ? activeItemRef : null}
                               variant="ghost"
-                              className={`w-full justify-start h-9 px-4 text-gray-400 rounded-lg ${isSubActive
-                                ? "bg-[#fce9e6] text-[#00d458] hover:bg-[#fce9e6] hover:text-[#00d458]"
-                                : "hover:bg-white hover:text-[#00d458]"
-                                } cursor-pointer`} // <-- Add cursor-pointer here
+                              className={`w-full justify-start h-9 px-4 text-gray-400 rounded-lg ${
+                                isSubActive
+                                  ? "bg-[#fce9e6] text-[#00d458] hover:bg-[#fce9e6] hover:text-[#00d458]"
+                                  : "hover:bg-white hover:text-[#00d458]"
+                              } cursor-pointer`} // <-- Add cursor-pointer here
                             >
                               {subitem.label}
                             </Button>

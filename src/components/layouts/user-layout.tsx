@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Sidebar } from "@/components/sidebar";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.png"
 import iconLogo from "@/assets/icon-logo.png";
 import { TopNavbar } from "@/components/top-navbar";
 import { ReactNode } from "react";
@@ -40,7 +40,8 @@ export default function UserLayout({ children }: UserLayoutProps) {
             </Link>
           </div>
         </div>
-        <div className="flex flex-col flex-1 relative scroll-container thin-scrollbar">
+        <div className="flex flex-col flex-1 relative scroll-container thin-scrollbar"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           <Sidebar isCollapsed={isSidebarCollapsed} />
         </div>
       </div>

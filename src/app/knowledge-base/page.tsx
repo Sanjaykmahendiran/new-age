@@ -1,244 +1,306 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  MoreVertical,
-  Pencil,
-  Trash,
-  Filter,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { KnowledgeBaseList, UsersList } from "@/service/listservice";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { DeleteArticle } from "@/service/deleteservices";
-import Spinner from "@/components/spinner";
-import KnowledgeBaseForm from "@/components/addknowledgebaseform";
-import DataTable from "@/components/datatable";
-import { motion } from "framer-motion";
-import DateRangePickerInput from "@/components/pick-date";
+import { useState } from "react"
+import { Search, BookOpen, Video, FileText, Star } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-interface KnowledgeArticle {
-  article_id: string;
-  title: string;
-  category: string;
-  tags: string;
-  content: string;
-  created_date: string;
-  last_updated: string;
-  author_id: string;
-  status: string;
-}
 
-export default function KnowledgeBasePage() {
-  const [articles, setArticles] = useState<KnowledgeArticle[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
+const topArticles = [
+  {
+    title: "Getting Started with FreightFlow API",
+    description: "Complete guide to integrating with our logistics API",
+    category: "API",
+    type: "article",
+    views: 1250,
+    rating: 4.8,
+  },
+  {
+    title: "Webhook Configuration Tutorial",
+    description: "Step-by-step video guide for setting up webhooks",
+    category: "API",
+    type: "video",
+    views: 890,
+    rating: 4.9,
+  },
+  {
+    title: "Platform Overview & Features",
+    description: "Understanding the FreightFlow platform capabilities",
+    category: "Platform",
+    type: "article",
+    views: 2100,
+    rating: 4.7,
+  },
+  {
+    title: "Troubleshooting Common Issues",
+    description: "Solutions to frequently encountered problems",
+    category: "Operations",
+    type: "article",
+    views: 1680,
+    rating: 4.6,
+  },
+]
 
-  // Filter states
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
-  const [showForm, setShowForm] = useState<boolean>(false);
+const apiArticles = [
+  {
+    title: "Authentication & API Keys",
+    description: "How to authenticate API requests",
+    views: 980,
+    rating: 4.8,
+  },
+  {
+    title: "Rate Limiting Best Practices",
+    description: "Understanding and working with API limits",
+    views: 750,
+    rating: 4.7,
+  },
+  {
+    title: "Webhook Events Reference",
+    description: "Complete list of available webhook events",
+    views: 650,
+    rating: 4.9,
+  },
+  {
+    title: "Error Codes & Troubleshooting",
+    description: "Common API errors and their solutions",
+    views: 820,
+    rating: 4.6,
+  },
+]
 
-  // Filter articles based on search query and other filters
-  const filteredArticles = articles.filter((article) => {
-    const matchesSearch =
-      String(article.title || "")
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      String(article.tags || "")
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      String(article.category || "")
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+const platformArticles = [
+  {
+    title: "Dashboard Navigation Guide",
+    description: "Getting familiar with the platform interface",
+    views: 1200,
+    rating: 4.5,
+  },
+  {
+    title: "User Management & Permissions",
+    description: "Managing team access and roles",
+    views: 890,
+    rating: 4.7,
+  },
+  {
+    title: "Notification Settings",
+    description: "Configuring alerts and notifications",
+    views: 670,
+    rating: 4.4,
+  },
+  {
+    title: "Data Export & Reporting",
+    description: "Generating reports and exporting data",
+    views: 1100,
+    rating: 4.8,
+  },
+]
 
-  const handleDelete = async (articleId: string) => {
-    try {
-      const response = await DeleteArticle(articleId);
+const operationsArticles = [
+  {
+    title: "Shipment Tracking Setup",
+    description: "Configuring real-time shipment tracking",
+    views: 1500,
+    rating: 4.9,
+  },
+  {
+    title: "Customs Documentation",
+    description: "Managing customs forms and compliance",
+    views: 1200,
+    rating: 4.6,
+  },
+  {
+    title: "Carrier Integration Guide",
+    description: "Connecting with shipping carriers",
+    views: 980,
+    rating: 4.7,
+  },
+  {
+    title: "Inventory Management",
+    description: "Tracking and managing inventory levels",
+    views: 850,
+    rating: 4.5,
+  },
+]
 
-      if (response?.status === "Article Deleted") {
-        console.log("Article deleted successfully");
-        fetchArticles();
-      } else {
-        console.error(
-          `Failed to delete article. Status: ${response?.status || "Unknown"}`
-        );
-      }
-    } catch (error: any) {
-      console.error("Error deleting article:", error.message || error);
-    }
-  };
-
-  const fetchArticles = async (
-    filters: {
-      searchQuery?: string;
-      fromDate?: string;
-      toDate?: string;
-    } = {}
-  ) => {
-    setIsLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (filters.searchQuery)
-        params.append("search_query", filters.searchQuery);
-      if (filters.fromDate) params.append("from_date", filters.fromDate);
-      if (filters.toDate) params.append("to_date", filters.toDate);
-
-      const queryString = params.toString();
-      const data: KnowledgeArticle[] = await KnowledgeBaseList(queryString);
-      setArticles(data);
-    } catch (err) {
-      console.error("Error fetching articles:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  // Row actions
-  const rowActions = (article: KnowledgeArticle) => (
-    <>
-      <div className="flex space-x-3">
-        <button
-          onClick={() => setEditingArticleId(article.article_id)}
-          className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-500 hover:text-blue-700 rounded-lg transition-all duration-200 ease-in-out"
-          aria-label="Edit Proposal"
-        >
-          <Pencil className="h-4 w-4" />
-        </button>
-
-        <button
-          onClick={() => handleDelete(article.article_id)}
-          className="p-2 bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-700 rounded-lg transition-all duration-200 ease-in-out"
-          aria-label="Delete Proposal"
-        >
-          <Trash className="h-4 w-4" />
-        </button>
-      </div>
-
-      {/* Edit Form (only for the selected article) */}
-      {editingArticleId === article.article_id && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[9999] overflow-hidden">
-          <motion.div
-            className="w-[90vw] max-w-xl max-h-[90vh] overflow-y-auto"
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            <KnowledgeBaseForm
-              onClose={() => setEditingArticleId(null)}
-              articleId={article.article_id}
-              isEdit={true}
-            />
-          </motion.div>
-        </div>
-      )}
-    </>
-  );
-
-  // Define columns for DataTable
-  const columns = [
-    {
-      header: "Title",
-      accessor: "title",
-    },
-    {
-      header: "Category",
-      accessor: "category",
-    },
-    {
-      header: "Tags",
-      accessor: "tags",
-      cell: ({ tags }: KnowledgeArticle) => (
-        <div className="flex flex-wrap gap-1">
-          {tags.split(",").map((tag, index) => (
-            <span
-              key={index}
-              className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full"
-            >
-              {tag.trim()}
-            </span>
-          ))}
-        </div>
-      ),
-    },
-    {
-      header: "Author",
-      accessor: "author",
-    },
-  ];
+export default function KnowledgeBase() {
+  const [searchTerm, setSearchTerm] = useState("")
 
   return (
-    <div className="w-auto p-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Knowledge Base</h1>
-        <Button variant="default" onClick={() => setShowForm(true)}>
-          Add Article
-        </Button>
-      </div>
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-t-lg mt-8 p-4 bg-white">
-        {/* Search input on the left */}
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search Articles"
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+    <div className="flex flex-col">
+      <header className="flex h-16 shrink-0 items-center gap-2  px-6">
+    
+        <div className="flex-1">
+          <h1 className="text-2xl font-semibold">Knowledge Base</h1>
+          <p className="text-sm text-muted-foreground">Find answers and learn about our platform</p>
         </div>
+      </header>
 
-        <DateRangePickerInput />
-      </div>
+      <div className="flex-1 p-6">
+        <div className="mx-auto max-w-6xl space-y-6">
+          {/* Search Bar */}
+          <div className="bg-white shadow-md rounded-xl px-4 py-4">
+            <CardContent>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search articles, videos, and guides..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 text-lg h-12"
+                />
+              </div>
+            </CardContent>
+          </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredArticles}
-        isLoading={isLoading}
-        rowActions={rowActions}
-        emptyMessage="No campaigns found. Try adjusting your filters."
-      />
+          {/* Top Articles */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Popular Articles & Videos</CardTitle>
+              <CardDescription>Most viewed content from our knowledge base</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                {topArticles.map((article, index) => (
+                  <Card
+                    key={index}
+                    className="transition-all duration-200 hover:shadow-md hover:-translate-y-1 cursor-pointer"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {article.type === "video" ? (
+                            <Video className="h-4 w-4 text-blue-600" />
+                          ) : (
+                            <FileText className="h-4 w-4 text-green-600" />
+                          )}
+                          <Badge variant="outline">{article.category}</Badge>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          {article.rating}
+                        </div>
+                      </div>
+                      <h3 className="font-semibold mb-1">{article.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-2">{article.description}</p>
+                      <p className="text-xs text-muted-foreground">{article.views} views</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-      {showForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[9999] overflow-hidden">
-          <motion.div
-            className="w-[90vw] max-w-xl max-h-[90vh] overflow-y-auto"
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            <KnowledgeBaseForm
-              onClose={() => setShowForm(false)}
-              isEdit={false}
-            />
-          </motion.div>
+          {/* Categorized Content */}
+          <Tabs defaultValue="api" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="api">API Documentation</TabsTrigger>
+              <TabsTrigger value="platform">Platform Guides</TabsTrigger>
+              <TabsTrigger value="operations">Operations</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="api" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    API Documentation
+                  </CardTitle>
+                  <CardDescription>Technical guides for integrating with FreightFlow APIs</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3">
+                    {apiArticles.map((article, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:bg-muted/50 cursor-pointer"
+                      >
+                        <div className="space-y-1">
+                          <h4 className="font-medium">{article.title}</h4>
+                          <p className="text-sm text-muted-foreground">{article.description}</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          {article.rating}
+                          <span>•</span>
+                          {article.views} views
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="platform" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    Platform Guides
+                  </CardTitle>
+                  <CardDescription>Learn how to use FreightFlow platform features</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3">
+                    {platformArticles.map((article, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:bg-muted/50 cursor-pointer"
+                      >
+                        <div className="space-y-1">
+                          <h4 className="font-medium">{article.title}</h4>
+                          <p className="text-sm text-muted-foreground">{article.description}</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          {article.rating}
+                          <span>•</span>
+                          {article.views} views
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="operations" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    Operations Guides
+                  </CardTitle>
+                  <CardDescription>Best practices for freight forwarding operations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3">
+                    {operationsArticles.map((article, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:bg-muted/50 cursor-pointer"
+                      >
+                        <div className="space-y-1">
+                          <h4 className="font-medium">{article.title}</h4>
+                          <p className="text-sm text-muted-foreground">{article.description}</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          {article.rating}
+                          <span>•</span>
+                          {article.views} views
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
-      )}
+      </div>
     </div>
-  );
+  )
 }
