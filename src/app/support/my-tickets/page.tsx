@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Download, Eye, MessageSquare } from "lucide-react"
+import { Search, Download, Eye, MessageSquare, ThumbsUp } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,9 +17,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 const tickets = [
   {
@@ -70,12 +70,28 @@ export default function MyTickets() {
   const [priorityFilter, setPriorityFilter] = useState("all")
   const [selectedTicket, setSelectedTicket] = useState<(typeof tickets)[0] | null>(null)
   const [reply, setReply] = useState("")
+  const [activeTab, setActiveTab] = useState<"all" | "open" | "closed">("all")
+
+  // CSAT Feedback state
+  const [feedbackTicket, setFeedbackTicket] = useState<(typeof tickets)[0] | null>(null)
+  const [satisfaction, setSatisfaction] = useState("")
+  const [feedbackComments, setFeedbackComments] = useState("")
+
+  const statusCounts = {
+    all: tickets.length,
+    open: tickets.filter((t) => t.status.toLowerCase() === "open").length,
+    closed: tickets.filter((t) => t.status.toLowerCase() === "resolved").length,
+  }
 
   const filteredTickets = tickets.filter((ticket) => {
     const matchesSearch =
       ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.id.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || ticket.status.toLowerCase() === statusFilter
+
+    const matchesStatus =
+      (statusFilter === "all" && activeTab === "all") ||
+      ticket.status.toLowerCase() === (activeTab === "closed" ? "resolved" : activeTab)
+
     const matchesPriority = priorityFilter === "all" || ticket.priority.toLowerCase() === priorityFilter
 
     return matchesSearch && matchesStatus && matchesPriority
@@ -105,12 +121,67 @@ export default function MyTickets() {
     }
   }
 
+  const getStatusBadgeClass = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "resolved":
+        return "bg-green-100 text-green-800 font-semibold"
+      case "in progress":
+        return "bg-yellow-100 text-yellow-800 font-semibold"
+      case "pending":
+        return "bg-blue-100 text-blue-800 font-semibold"
+      case "open":
+        return "bg-red-100 text-red-800 font-semibold"
+      default:
+        return "bg-gray-100 text-gray-800 font-semibold"
+    }
+  }
+
+  const getPriorityBadgeClass = (priority: string) => {
+    switch (priority.toLowerCase()) {
+      case "high":
+        return "bg-red-100 text-red-800 font-semibold"
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 font-semibold"
+      case "low":
+        return "bg-green-100 text-green-800 font-semibold"
+      default:
+        return "bg-gray-100 text-gray-800 font-semibold"
+    }
+  }
+
+  const handleFeedbackSubmit = () => {
+    // Handle feedback submission here
+    console.log("Feedback submitted:", {
+      ticketId: feedbackTicket?.id,
+      satisfaction,
+      comments: feedbackComments
+    })
+
+    // Reset form and close dialog
+    setSatisfaction("")
+    setFeedbackComments("")
+    setFeedbackTicket(null)
+
+    // You can add success message or API call here
+    alert("Thank you for your feedback!")
+  }
+
+  const getSatisfactionEmoji = (value: string) => {
+    switch (value) {
+      case "very-satisfied": return "😊"
+      case "satisfied": return "🙂"
+      case "neutral": return "😐"
+      case "dissatisfied": return "🙁"
+      case "very-dissatisfied": return "😞"
+      default: return ""
+    }
+  }
+
   return (
-    <div className="flex flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2  px-6">
-       
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">My Tickets</h1>
+    <div className="flex flex-col min-h-screen">
+      <header className="flex items-center justify-between px-6 py-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">My Tickets</h1>
           <p className="text-sm text-muted-foreground">Track and manage your support requests</p>
         </div>
       </header>
@@ -119,16 +190,38 @@ export default function MyTickets() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Support Tickets</CardTitle>
-                <CardDescription>View and manage your support requests</CardDescription>
+              {/* Tab Buttons */}
+              <div className="flex items-center gap-2">
+                {(["all", "open", "closed"] as const).map((statusKey) => (
+                  <button
+                    key={statusKey}
+                    onClick={() => {
+                      setActiveTab(statusKey)
+                      setStatusFilter(statusKey)
+                    }}
+                    className={`relative px-4 py-2 rounded-md text-sm font-medium transition ${activeTab === statusKey
+                        ? "bg-primary text-white"
+                        : "bg-gray-100 text-gray-800 hover:bg-primary hover:text-white"
+                      }`}
+                  >
+                    {statusKey.charAt(0).toUpperCase() + statusKey.slice(1)}
+                    <span
+                      className={`absolute -top-2 -right-2 text-[10px] px-2 py-[1px] rounded-full ${activeTab === statusKey ? "bg-white text-primary" : "bg-primary text-white"
+                        }`}
+                    >
+                      {statusCounts[statusKey]}
+                    </span>
+                  </button>
+                ))}
               </div>
+
               <Button variant="outline" className="gap-2 bg-transparent">
                 <Download className="h-4 w-4" />
                 Export
               </Button>
             </div>
           </CardHeader>
+
           <CardContent>
             {/* Filters */}
             <div className="flex flex-col gap-4 mb-6 sm:flex-row">
@@ -145,7 +238,7 @@ export default function MyTickets() {
                 <SelectTrigger className="w-full sm:w-40">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="hover:text-white">
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="open">Open</SelectItem>
                   <SelectItem value="in progress">In Progress</SelectItem>
@@ -167,96 +260,191 @@ export default function MyTickets() {
             </div>
 
             {/* Tickets Table */}
-            <div className="rounded-md border">
+            <div className="rounded-md border-b">
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-gray-100">
                   <TableRow>
-                    <TableHead>Ticket ID</TableHead>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Priority</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Updated</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="text-black text-[13px]">Ticket ID</TableHead>
+                    <TableHead className="text-black text-[13px]">Subject</TableHead>
+                    <TableHead className="text-black text-[13px]">Status</TableHead>
+                    <TableHead className="text-black text-[13px]">Priority</TableHead>
+                    <TableHead className="text-black text-[13px]">Category</TableHead>
+                    <TableHead className="text-black text-[13px]">Updated</TableHead>
+                    <TableHead className="text-black text-[13px] w-[100px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredTickets.map((ticket) => (
-                    <TableRow key={ticket.id} className="hover:bg-muted/50">
-                      <TableCell className="font-mono">{ticket.id}</TableCell>
+                    <TableRow key={ticket.id} className="hover:bg-muted/50 text-gray-500">
+                      <TableCell>{ticket.id}</TableCell>
                       <TableCell className="font-medium">{ticket.subject}</TableCell>
                       <TableCell>
-                        <Badge variant={getStatusColor(ticket.status)}>{ticket.status}</Badge>
+                        <Badge className={getStatusBadgeClass(ticket.status)}>
+                          {ticket.status}
+                        </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge>
+                        <Badge className={getPriorityBadgeClass(ticket.priority)}>
+                          {ticket.priority}
+                        </Badge>
                       </TableCell>
                       <TableCell>{ticket.category}</TableCell>
                       <TableCell>{ticket.updated}</TableCell>
                       <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm" onClick={() => setSelectedTicket(ticket)}>
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl">
-                            <DialogHeader>
-                              <DialogTitle className="flex items-center gap-2">
-                                {selectedTicket?.id} - {selectedTicket?.subject}
-                              </DialogTitle>
-                              <DialogDescription>
-                                Created on {selectedTicket?.created} • Assigned to {selectedTicket?.assignee}
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div className="flex gap-2">
-                                <Badge variant={getStatusColor(selectedTicket?.status || "")}>
-                                  {selectedTicket?.status}
-                                </Badge>
-                                <Badge variant={getPriorityColor(selectedTicket?.priority || "")}>
-                                  {selectedTicket?.priority}
-                                </Badge>
-                                <Badge variant="outline">{selectedTicket?.category}</Badge>
-                              </div>
-
-                              <div className="space-y-4 max-h-60 overflow-y-auto">
-                                <div className="p-4 bg-muted rounded-lg">
-                                  <p className="text-sm font-medium mb-2">Original Message</p>
-                                  <p className="text-sm">
-                                    I'm experiencing issues with API rate limiting. The requests are being throttled
-                                    even though I'm well within the documented limits. This is affecting our production
-                                    shipment tracking system.
-                                  </p>
+                        <div className="flex gap-1 ">
+                          {/* View Ticket Dialog */}
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="sm" onClick={() => setSelectedTicket(ticket)}>
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle className="flex items-center gap-2">
+                                  {selectedTicket?.id} - {selectedTicket?.subject}
+                                </DialogTitle>
+                                <DialogDescription>
+                                  Created on {selectedTicket?.created} • Assigned to {selectedTicket?.assignee}
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div className="flex gap-2">
+                                  <Badge variant={getStatusColor(selectedTicket?.status || "")}>
+                                    {selectedTicket?.status}
+                                  </Badge>
+                                  <Badge variant={getPriorityColor(selectedTicket?.priority || "")}>
+                                    {selectedTicket?.priority}
+                                  </Badge>
+                                  <Badge variant="outline">{selectedTicket?.category}</Badge>
                                 </div>
 
-                                <div className="p-4 bg-blue-50 rounded-lg">
-                                  <p className="text-sm font-medium mb-2">Support Response - Sarah Chen</p>
-                                  <p className="text-sm">
-                                    Thank you for reaching out. I've reviewed your API usage and can see the issue. It
-                                    appears there's a configuration problem with your rate limiting settings. I'm
-                                    working on a fix and will update you shortly.
-                                  </p>
-                                  <p className="text-xs text-muted-foreground mt-2">2 hours ago</p>
+                                <div className="space-y-4 max-h-60 overflow-y-auto">
+                                  <div className="p-4 bg-muted rounded-lg">
+                                    <p className="text-sm font-medium mb-2">Original Message</p>
+                                    <p className="text-sm">
+                                      I'm experiencing issues with API rate limiting. The requests are being throttled
+                                      even though I'm well within the documented limits. This is affecting our production
+                                      shipment tracking system.
+                                    </p>
+                                  </div>
+
+                                  <div className="p-4 bg-blue-50 rounded-lg">
+                                    <p className="text-sm font-medium mb-2">Support Response - Sarah Chen</p>
+                                    <p className="text-sm">
+                                      Thank you for reaching out. I've reviewed your API usage and can see the issue. It
+                                      appears there's a configuration problem with your rate limiting settings. I'm
+                                      working on a fix and will update you shortly.
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-2">2 hours ago</p>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="reply">Add Reply</Label>
+                                  <Textarea
+                                    id="reply"
+                                    placeholder="Type your reply..."
+                                    value={reply}
+                                    onChange={(e) => setReply(e.target.value)}
+                                  />
+                                  <Button className="w-full">
+                                    <MessageSquare className="mr-2 h-4 w-4" />
+                                    Send Reply
+                                  </Button>
                                 </div>
                               </div>
+                            </DialogContent>
+                          </Dialog>
 
-                              <div className="space-y-2">
-                                <Label htmlFor="reply">Add Reply</Label>
-                                <Textarea
-                                  id="reply"
-                                  placeholder="Type your reply..."
-                                  value={reply}
-                                  onChange={(e) => setReply(e.target.value)}
-                                />
-                                <Button className="w-full">
-                                  <MessageSquare className="mr-2 h-4 w-4" />
-                                  Send Reply
+                          {/* Feedback Button - Only show for resolved tickets */}
+                          {ticket.status.toLowerCase() === "resolved" && (
+                            <Dialog open={feedbackTicket?.id === ticket.id} onOpenChange={(open) => {
+                              if (!open) {
+                                setFeedbackTicket(null)
+                                setSatisfaction("")
+                                setFeedbackComments("")
+                              }
+                            }}>
+                              <DialogTrigger asChild>
+                                <Button
+                                  size="sm"
+                                  onClick={() => setFeedbackTicket(ticket)}
+                                  className=""
+                                >
+                                  Submit Feedback<ThumbsUp className="h-4 w-4" />
                                 </Button>
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-md">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center gap-2">
+                                    Feedback
+                                  </DialogTitle>
+                                  <DialogDescription>
+                                    Please rate your satisfaction with ticket {feedbackTicket?.id}
+                                  </DialogDescription>
+                                </DialogHeader>
+
+                                <div className="space-y-6">
+                                  {/* Satisfaction Rating */}
+                                  <div className="space-y-3">
+                                    <Label className="text-sm font-medium">How satisfied are you with the resolution?</Label>
+                                    <RadioGroup value={satisfaction} onValueChange={setSatisfaction} className="space-y-2">
+                                      {[
+                                        { value: "very-satisfied", label: "Very Satisfied", emoji: "😊" },
+                                        { value: "satisfied", label: "Satisfied", emoji: "🙂" },
+                                        { value: "neutral", label: "Neutral", emoji: "😐" },
+                                        { value: "dissatisfied", label: "Dissatisfied", emoji: "🙁" },
+                                        { value: "very-dissatisfied", label: "Very Dissatisfied", emoji: "😞" }
+                                      ].map((option) => (
+                                        <div key={option.value} className="flex items-center space-x-2">
+                                          <RadioGroupItem value={option.value} id={option.value} />
+                                          <Label htmlFor={option.value} className="flex items-center gap-2 cursor-pointer">
+                                            <span className="text-lg">{option.emoji}</span>
+                                            {option.label}
+                                          </Label>
+                                        </div>
+                                      ))}
+                                    </RadioGroup>
+                                  </div>
+
+                                  {/* Additional Comments */}
+                                  <div className="space-y-2">
+                                    <Label htmlFor="feedback-comments">Additional Comments (Optional)</Label>
+                                    <Textarea
+                                      id="feedback-comments"
+                                      placeholder="Tell us more about your experience..."
+                                      value={feedbackComments}
+                                      onChange={(e) => setFeedbackComments(e.target.value)}
+                                      rows={3}
+                                    />
+                                  </div>
+
+                                  {/* Submit Button */}
+                                  <div className="flex gap-2">
+                                    <Button
+                                      onClick={handleFeedbackSubmit}
+                                      disabled={!satisfaction}
+                                      className="flex-1"
+                                    >
+                                      Submit Feedback
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => {
+                                        setFeedbackTicket(null)
+                                        setSatisfaction("")
+                                        setFeedbackComments("")
+                                      }}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

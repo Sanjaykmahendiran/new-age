@@ -61,7 +61,7 @@ export default function AuthenticationKeys() {
   const [newKeyName, setNewKeyName] = useState("")
   const [newKeyEnvironment, setNewKeyEnvironment] = useState("")
   const [newKeyPermissions, setNewKeyPermissions] = useState<string[]>([])
-  
+
 
   const toggleKeyVisibility = (keyId: string) => {
     const newVisible = new Set(visibleKeys)
@@ -75,19 +75,19 @@ export default function AuthenticationKeys() {
 
   const copyApiKey = (key: string) => {
     navigator.clipboard.writeText(key)
-    
+
   }
 
   const regenerateApiKey = (keyId: string) => {
-    
+
   }
 
   const deleteApiKey = (keyId: string) => {
-    
+
   }
 
   const createApiKey = () => {
-    
+
     setNewKeyName("")
     setNewKeyEnvironment("")
     setNewKeyPermissions([])
@@ -102,11 +102,10 @@ export default function AuthenticationKeys() {
   }
 
   return (
-    <div className="flex flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2  px-6">
-     
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">Authentication & Keys</h1>
+    <div className="flex flex-col min-h-screen ">
+      <header className="flex items-center justify-between px-6 py-4 ">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Authentication & Keys</h1>
           <p className="text-sm text-muted-foreground">Manage your API keys and authentication settings</p>
         </div>
         <Dialog>
@@ -250,7 +249,13 @@ export default function AuthenticationKeys() {
                           </div>
                           <div>
                             <Label className="text-sm font-medium">Last Used</Label>
-                            <p className="text-sm text-muted-foreground mt-1">{apiKey.lastUsed}</p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {new Date(apiKey.lastUsed).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -327,47 +332,47 @@ export default function AuthenticationKeys() {
           </Card>
 
           {/* Webhook Configuration */}
-        {/* Webhook Configuration */}
-<Card>
-  <CardHeader>
-    <CardTitle>Webhook Configuration</CardTitle>
-    <CardDescription>Configure webhook endpoints for real-time notifications</CardDescription>
-  </CardHeader>
-  <CardContent className="space-y-5">
-    <div className="space-y-1.5">
-      <Label htmlFor="webhookUrl">Webhook URL</Label>
-      <Input
-        id="webhookUrl"
-        placeholder="https://your-app.com/webhooks/freightflow"
-        defaultValue="https://api.acmelogistics.com/webhooks/freightflow"
-      />
-    </div>
-    <div className="space-y-1.5">
-      <Label htmlFor="webhookSecret">Webhook Secret</Label>
-      <div className="flex items-center gap-2">
-        <Input
-          id="webhookSecret"
-          type="password"
-          placeholder="Your webhook secret"
-          defaultValue="whsec_1234567890abcdef"
-        />
-        <Button variant="outline" size="icon" className="h-9 w-9">
-          <RefreshCw className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-    <div className="p-4 bg-yellow-50 rounded-lg">
-      <h4 className="font-medium mb-1.5">Webhook Security</h4>
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        Always verify webhook signatures using the provided secret to ensure requests are from FreightFlow.
-        Check our documentation for signature verification examples.
-      </p>
-    </div>
-    <div className="flex justify-end">
-      <Button size="sm" className="px-4">Update Webhook Settings</Button>
-    </div>
-  </CardContent>
-</Card>
+          {/* Webhook Configuration */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Webhook Configuration</CardTitle>
+              <CardDescription>Configure webhook endpoints for real-time notifications</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="webhookUrl">Webhook URL</Label>
+                <Input
+                  id="webhookUrl"
+                  placeholder="https://your-app.com/webhooks/freightflow"
+                  defaultValue="https://api.acmelogistics.com/webhooks/freightflow"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="webhookSecret">Webhook Secret</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="webhookSecret"
+                    type="password"
+                    placeholder="Your webhook secret"
+                    defaultValue="whsec_1234567890abcdef"
+                  />
+                  <Button variant="outline" size="icon" className="h-9 w-9">
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <h4 className="font-medium mb-1.5">Webhook Security</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Always verify webhook signatures using the provided secret to ensure requests are from FreightFlow.
+                  Check our documentation for signature verification examples.
+                </p>
+              </div>
+              <div className="flex justify-end">
+                <Button size="sm" className="px-4">Update Webhook Settings</Button>
+              </div>
+            </CardContent>
+          </Card>
 
         </div>
       </div>

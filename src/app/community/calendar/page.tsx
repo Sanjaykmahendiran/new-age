@@ -130,15 +130,15 @@ export default function CommunityCalendar() {
     }
   };
 
-  const handleJoinWebinar = (event: (typeof events)[0]) => {};
+  const handleJoinWebinar = (event: (typeof events)[0]) => { };
 
-  const handleRSVP = (event: (typeof events)[0]) => {};
+  const handleRSVP = (event: (typeof events)[0]) => { };
 
   return (
-    <div className="flex flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2  px-6">
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">Community Calendar</h1>
+    <div className="flex flex-col min-h-screen ">
+      <header className="flex items-center justify-between px-6 py-4 ">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Community Calendar</h1>
           <p className="text-sm text-muted-foreground">
             Stay updated with webinars, roadshows, and product releases
           </p>
@@ -149,7 +149,7 @@ export default function CommunityCalendar() {
             setCurrentView(value as "month" | "week" | "day")
           }
         >
-          <TabsList className="bg-muted p-1 rounded-lg">
+          <TabsList className="bg-white p-1 rounded-lg">
             <TabsTrigger
               value="month"
               className="data-[state=active]:bg-primary data-[state=active]:text-white px-4 py-2 rounded-md"
@@ -355,7 +355,7 @@ export default function CommunityCalendar() {
                                           )}
                                         {selectedEvent &&
                                           selectedEvent.type ===
-                                            "Product Release" &&
+                                          "Product Release" &&
                                           selectedEvent.releaseNotes && (
                                             <Button
                                               variant="outline"
@@ -367,7 +367,7 @@ export default function CommunityCalendar() {
                                           )}
                                         {selectedEvent &&
                                           selectedEvent.type ===
-                                            "Community Event" &&
+                                          "Community Event" &&
                                           selectedEvent.joinLink && (
                                             <Button
                                               className="flex-1"

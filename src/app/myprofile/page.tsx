@@ -61,10 +61,10 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="flex h-16 shrink-0 items-center gap-2 px-6">
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">Profile Settings</h1>
+    <div className="flex flex-col min-h-screen ">
+      <header className="flex items-center justify-between px-6 py-4 ">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Profile Settings</h1>
           <p className="text-sm text-muted-foreground">Manage your account settings and preferences</p>
         </div>
       </header>

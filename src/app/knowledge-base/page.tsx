@@ -128,17 +128,16 @@ export default function KnowledgeBase() {
   const [searchTerm, setSearchTerm] = useState("")
 
   return (
-    <div className="flex flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2  px-6">
-    
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">Knowledge Base</h1>
+    <div className="flex flex-col min-h-screen ">
+      <header className="flex items-center justify-between px-6 py-4 ">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Knowledge Base</h1>
           <p className="text-sm text-muted-foreground">Find answers and learn about our platform</p>
         </div>
       </header>
 
       <div className="flex-1 p-6">
-        <div className="mx-auto max-w-6xl space-y-6">
+        <div className="mx-auto  space-y-6">
           {/* Search Bar */}
           <div className="bg-white shadow-md rounded-xl px-4 py-4">
             <CardContent>

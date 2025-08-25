@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    basePath: '',
+    basePath: '/customer',
   env: {
     API_BASE_URL: 'https://new-age.top/App/api.php',
     NEXT_PUBLIC_BASE_PATH: '',

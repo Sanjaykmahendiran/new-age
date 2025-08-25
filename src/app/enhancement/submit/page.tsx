@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import { Upload, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 
 export default function SubmitEnhancement() {
   const [title, setTitle] = useState("")
@@ -68,44 +69,45 @@ export default function SubmitEnhancement() {
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="px-6 py-4">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl font-semibold text-gray-900">Submit Enhancement</h1>
+    <div className="flex flex-col min-h-screen ">
+      <header className="flex items-center justify-between px-6 py-4 ">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Submit Enhancement</h1>
           <p className="text-sm text-gray-600 mt-1">Share your ideas to improve FreightFlow</p>
         </div>
       </header>
+      <div className="flex-1 px-6 py-2">
+        <div className="rounded-xl border bg-white shadow-sm">
+          <div className="p-6 space-y-6">
 
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="rounded-lg border bg-white shadow-sm">
-          <div className="p-6 pt-2 space-y-6">
             {/* Feature Title */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Feature Title *</label>
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Feature Title *</Label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter a clear, descriptive title for your enhancement"
-                className="h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-400 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             {/* Category & Priority */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
               {/* Category Dropdown */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Category *</label>
+              <div className="space-y-4">
+                <Label className="text-sm font-medium text-gray-700">Category *</Label>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
                     className="h-10 w-full flex items-center justify-between rounded-md border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <span className={category ? "text-gray-900" : "text-gray-500"}>
+                    <span className={category ? "text-gray-900" : "text-gray-400"}>
                       {category || "Select category"}
                     </span>
-                    <svg className="h-4 w-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
@@ -114,7 +116,7 @@ export default function SubmitEnhancement() {
                       {categories.map((cat) => (
                         <div
                           key={cat}
-                          className="cursor-pointer select-none py-2 px-3 text-sm hover:bg-gray-100"
+                          className="cursor-pointer select-none py-2 px-3 text-sm text-gray-600 hover:bg-gray-100"
                           onClick={() => {
                             setCategory(cat)
                             setShowCategoryDropdown(false)
@@ -129,16 +131,18 @@ export default function SubmitEnhancement() {
               </div>
 
               {/* Priority Dropdown */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Priority *</label>
+              <div className="space-y-4">
+                <Label className="text-sm font-medium text-gray-700">Priority *</Label>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
                     className="h-10 w-full flex items-center justify-between rounded-md border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <span className={getPriorityColor()}>{getPriorityLabel()}</span>
-                    <svg className="h-4 w-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span className={priority ? getPriorityColor() : "text-gray-400"}>
+                      {getPriorityLabel()}
+                    </span>
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
@@ -163,23 +167,23 @@ export default function SubmitEnhancement() {
             </div>
 
             {/* Description */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Detailed Description *</label>
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Detailed Description *</Label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your enhancement idea in detail..."
-                className="min-h-32 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="min-h-32 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-400 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
             </div>
 
             {/* File Upload */}
             <div className="space-y-4">
-              <label className="text-sm font-medium text-gray-700">Screenshots / Mockups</label>
+              <Label className="text-sm font-medium text-gray-700">Screenshots / Mockups</Label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400">
                 <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600">Upload screenshots, mockups, or reference images</p>
-                <p className="text-xs text-gray-500 mb-3">PNG, JPG, GIF up to 10MB each</p>
+                <p className="text-sm text-gray-400">Upload screenshots, mockups, or reference images</p>
+                <p className="text-xs text-gray-400 mb-3">PNG, JPG, GIF up to 10MB each</p>
                 <input
                   type="file"
                   multiple
@@ -191,7 +195,7 @@ export default function SubmitEnhancement() {
                 <button
                   type="button"
                   onClick={() => document.getElementById("file-upload")?.click()}
-                  className="border border-gray-300 bg-white hover:bg-gray-50 rounded-md h-10 px-4 text-sm font-medium"
+                  className="border border-gray-300 bg-white hover:bg-gray-50 rounded-md h-10 px-4 text-sm font-medium text-gray-400"
                 >
                   Choose Files
                 </button>
@@ -199,9 +203,9 @@ export default function SubmitEnhancement() {
 
               {/* Uploaded Files */}
               {files.length > 0 && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Uploaded Files</label>
-                  <div className="space-y-2">
+                <div className="space-y-4">
+                  <Label className="text-sm font-medium text-gray-700">Uploaded Files</Label>
+                  <div className="space-y-4">
                     {files.map((file, index) => (
                       <div
                         key={index}
@@ -212,8 +216,8 @@ export default function SubmitEnhancement() {
                             <Upload className="h-4 w-4 text-blue-600" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                            <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                            <p className="text-sm font-medium text-gray-700">{file.name}</p>
+                            <p className="text-xs text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                           </div>
                         </div>
                         <button
@@ -242,7 +246,7 @@ export default function SubmitEnhancement() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end pt-4 border-t border-gray-200">
+            <div className="flex justify-end pt-4 ">
               <Button onClick={handleSubmit} className="bg-primary text-white h-10 px-6">
                 Submit Enhancement Request
               </Button>
@@ -250,6 +254,7 @@ export default function SubmitEnhancement() {
           </div>
         </div>
       </div>
+
     </div>
   )
 }

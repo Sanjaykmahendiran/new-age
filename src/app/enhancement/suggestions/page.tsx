@@ -222,10 +222,10 @@ export default function CommunityEnhancements() {
     });
 
   return (
-    <div className="flex flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2  px-4">
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">Community Suggestions</h1>
+    <div className="flex flex-col min-h-screen ">
+      <header className="flex items-center justify-between px-6 py-4 ">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Community Suggestions</h1>
           <p className="text-sm text-muted-foreground">
             Vote and discuss enhancement ideas from the community
           </p>

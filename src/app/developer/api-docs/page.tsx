@@ -209,7 +209,7 @@ export default function DeveloperAPIDocs() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    
+
   }
 
   const getMethodColor = (method: string) => {
@@ -238,11 +238,10 @@ export default function DeveloperAPIDocs() {
   const categories = [...new Set(endpoints.map((e) => e.category))]
 
   return (
-    <div className="flex flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2 px-6">
-
-        <div className="flex-1">
-          <h1 className="text-2xl font-semibold">API Documentation</h1>
+    <div className="flex flex-col min-h-screen ">
+      <header className="flex items-center justify-between px-6 py-4 ">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">API Documentation</h1>
           <p className="text-sm text-muted-foreground">Complete technical reference for FreightFlow APIs</p>
         </div>
         <div className="flex items-center gap-2">
@@ -410,24 +409,24 @@ export default function DeveloperAPIDocs() {
                       </CardTitle>
                       <CardDescription>Complete list of available API endpoints</CardDescription>
                     </div>
-<div className="flex flex-wrap items-center gap-2">
-  {[
-    { label: "All", value: "all" },
-    ...categories.map((c) => ({ label: c, value: c.toLowerCase() })),
-  ].map(({ label, value }) => (
-    <Button
-      key={value}
-      size="sm"
-      variant={selectedCategory === value ? "default" : "outline"}
-      onClick={() => setSelectedCategory(value)}
-      className="hover:bg-gray-100 hover:text-black transition-colors"
-    >
-      {label}
-    </Button>
-  ))}
-</div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {[
+                        { label: "All", value: "all" },
+                        ...categories.map((c) => ({ label: c, value: c.toLowerCase() })),
+                      ].map(({ label, value }) => (
+                        <Button
+                          key={value}
+                          size="sm"
+                          variant={selectedCategory === value ? "default" : "outline"}
+                          onClick={() => setSelectedCategory(value)}
+                          className="hover:bg-gray-100 hover:text-black transition-colors"
+                        >
+                          {label}
+                        </Button>
+                      ))}
+                    </div>
 
-             </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">

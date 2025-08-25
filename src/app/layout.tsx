@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className="h-full bg-gray-50">
+    <html lang="en" className="h-full bg-gray-100">
       <body className={`${roboto.className} h-full antialiased bg-gray-50`}>
         <div className="min-h-screen bg-gray-50">
           <Suspense>{children}</Suspense>
